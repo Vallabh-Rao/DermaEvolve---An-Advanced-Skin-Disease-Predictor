@@ -104,7 +104,7 @@ The dataset used for training the model is derived from publicly available sourc
 - **Lentigo Maligna**
 - **Nevus Sebaceus**
 
-The images in the dataset are preprocessed (resized to a fixed size and normalized) before being fed into the models for training.
+The images in the dataset are preprocessed (resized to a 64 x 64 size and normalized) before being fed into the models for training.
 
 ## Model Architecture
 
