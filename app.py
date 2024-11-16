@@ -663,6 +663,7 @@ elif page == "About Us":
             <h2 style="font-size: 24px; color: #333333; font-weight: bold;">Interested in Our Dataset or Collaboration?</h2>
             <p style="font-size: 18px; color: #555555;">If you are interested in gaining access to the dataset, wish to collaborate on exciting projects, or have any inquiries, we would love to hear from you. Feel free to reach out to us for further discussions!</p>
             <p style="font-size: 18px; color: #333333;"><strong>Email:</strong> <a href="mailto:lokesh.bhaskarnr@gmail.com" style="color: #0066cc; font-weight: bold; text-decoration: none;">lokesh.bhaskarnr@gmail.com</a></p>
+            <p style="font-size: 18px; color: #333333;"><a href="mailto:vallabhaarao@gmail.com" style="color: #0066cc; font-weight: bold; text-decoration: none;">vallabhaarao@gmail.com</a></p>
             <p style="font-size: 18px; color: #555555;">You can also explore our models and more on GitHub:</p>
             <p><a href="https://github.com/LokeshBhaskarNR/DermaEvolve---An-Advanced-Skin-Disease-Predictor.git" target="_blank" style="color: #0066cc; font-size: 18px; text-decoration: none; font-weight: bold; border-bottom: 2px solid #0066cc; transition: all 0.3s ease-in-out;">GitHub Repository</a></p>
             <p style="font-size: 16px; color: #777777; margin-top: 10px;">We look forward to connecting with you!</p>
