@@ -554,16 +554,16 @@ elif page == "About Us":
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
-        st.image(image1, width=150, caption="")
+        st.image(image1, width=50, caption="")
 
     with col2:
-        st.image(image2, width=150, caption="")
+        st.image(image2, width=50, caption="")
 
     with col3:
-        st.image(image3, width=150, caption="")
+        st.image(image3, width=50, caption="")
 
     with col4:
-        st.image(image4, width=150, caption="")
+        st.image(image4, width=50, caption="")
 
 
     st.markdown("""
