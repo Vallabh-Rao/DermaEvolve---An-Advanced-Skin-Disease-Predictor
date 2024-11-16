@@ -14,7 +14,7 @@ from streamlit.components.v1 import html
 import pandas as pd
 import seaborn as sns
 
-st.set_page_config(page_title="DermaEvolve - An Advanced Skin Disease Predictor", page_icon="🩺")
+st.set_page_config(page_title="DermaEvolve - An Advanced Skin Disease Predictor", page_icon="😷")
 
 with st.sidebar:
     page = option_menu(
