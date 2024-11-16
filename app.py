@@ -173,7 +173,7 @@ if page == "Home":
         with col1:
             st.markdown(
                 """
-                <div style="background-color: rgb(237, 237, 36); width: 15em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
+                <div style="background-color: rgb(237, 237, 36); width: 20em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
                     <h3>Customized CNN Model</h3>
                     <p style="text-align: justify;">This model is specifically tailored for skin disease prediction, leveraging a customized CNN architecture.</p>
                     <p><strong>Accuracy: 82.70%</strong></p>
@@ -183,7 +183,7 @@ if page == "Home":
         with col2:
             st.markdown(
                 """
-                <div style="background-color: rgb(160, 237, 36); width: 15em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
+                <div style="background-color: rgb(160, 237, 36); width: 20em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
                     <h3>MobileNet</h3>
                     <p style="text-align: justify;">MobileNet is a lightweight neural network model faster and efficient for complex predictions, making it the most flexible fine-tuned model.</p>
                     <p><strong>Accuracy: 66.00%</strong></p>
@@ -193,7 +193,7 @@ if page == "Home":
         with col3:
             st.markdown(
                 """
-                <div style="background-color: rgb(54, 252, 225); width: 15em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
+                <div style="background-color: rgb(54, 252, 225); width: 20em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
                     <h3>DenseNet-169</h3>
                     <p style="text-align: justify;">DenseNet-169 is a deep convolutional network that improves performance by connecting each layer to every other layer in a feed-forward fashion.</p>
                     <p><strong>Accuracy: 75.71%</strong></p>
@@ -203,7 +203,7 @@ if page == "Home":
         with col4:
             st.markdown(
                 """
-                <div style="background-color: rgb(245, 104, 104); width: 15em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
+                <div style="background-color: rgb(245, 104, 104); width: 20em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
                     <h3>NASNet</h3>
                     <p style="text-align: justify;">NASNet is a neural architecture search-based model designed for optimal performance on image classification tasks like skin disease detection.</p>
                     <p><strong>Accuracy: 62.76%</strong></p>
