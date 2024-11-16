@@ -3,7 +3,7 @@ import streamlit as st
 import numpy as np
 from PIL import Image
 import openai
-import cv2
+
 from tensorflow.keras.preprocessing import image as keras_image
 import tensorflow as tf
 from tensorflow import lite
