@@ -1,4 +1,4 @@
-# DermaEvolve: Skin Disease Prediction
+# DermaEvolve: An Advanced Skin Disease Predictor
 
 **DermaEvolve** is an AI-powered tool designed to predict various skin diseases using machine learning models. This project utilizes deep learning techniques, particularly convolutional neural networks (CNNs), to classify dermatological diseases based on images of skin lesions. The tool is built with TensorFlow and Streamlit, providing an easy-to-use interface for users to upload images and receive predictions.
 
