@@ -544,26 +544,9 @@ elif page == "Analytics":
     
 elif page == "About Us":
     
-    st.title("About Us... The DEVELOPERS..!")
+    st.title("About Us... The DEVELOPERS..! 🐍")
     
-    image1 = "assets/computer-engineer.png" 
-    image2 = "assets/koala.png"  
-    image3 = "assets/workout.png"  
-    image4 = "assets/gaming.png"  
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.image(image1, width=50, caption="")
-
-    with col2:
-        st.image(image2, width=50, caption="")
-
-    with col3:
-        st.image(image3, width=50, caption="")
-
-    with col4:
-        st.image(image4, width=50, caption="")
+    
 
 
     st.markdown("""
