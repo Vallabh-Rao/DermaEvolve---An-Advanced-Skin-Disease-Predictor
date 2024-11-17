@@ -222,7 +222,7 @@ if page == "Home":
                 """, unsafe_allow_html=True)
     
     st.markdown('<br>', unsafe_allow_html=True)
-    st.markdown('<p class="intro-text" style="text-align: justify;">Our models are trained using high-quality, labeled dermatological datasets, and we leverage various techniques such as GAN-based augmentation to address data imbalances, improving model robustness and accuracy.</p>', unsafe_allow_html=True)
+    st.markdown('<p class="intro-text" style="text-align: justify;">Our models are trained using high-quality, labeled dermatological datasets, and we leverage various techniques such as SMOTE-based augmentation to address data imbalances, improving model robustness and accuracy.</p>', unsafe_allow_html=True)
 
     
     st.subheader("Key Features of DermaEvolve")
