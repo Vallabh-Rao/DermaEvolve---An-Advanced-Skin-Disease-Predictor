@@ -224,8 +224,8 @@ if page == "Home":
     st.markdown('<br>', unsafe_allow_html=True)
     st.markdown('<p class="intro-text" style="text-align: justify;">Our models are trained using high-quality, labeled dermatological datasets, and we leverage various techniques such as GAN-based augmentation to address data imbalances, improving model robustness and accuracy.</p>', unsafe_allow_html=True)
 
-    st.markdown('<p class="header-title"style="text-align: justify;">Key Features of DermaEvolve</p>', unsafe_allow_html=True)
-
+    
+    st.subheader("Key Features of DermaEvolve")
     st.markdown("""
         <ul class="intro-text" style="text-align: justify;">
             <li><b>Real-time Skin Disease Prediction:</b> Using deep learning models for fast and accurate diagnosis.</li>
@@ -235,7 +235,8 @@ if page == "Home":
         </ul>
     """, unsafe_allow_html=True)
 
-    st.markdown('<p class="header-title">How It Works</p>', unsafe_allow_html=True)
+    st.subheader("How It Works ?")
+    
     st.markdown('<p class="intro-text" style="text-align: justify;">DermaEvolve allows users to upload an image of a skin lesion or mole, and within seconds, it returns a prediction of the skin condition. The system analyzes features like color, texture, shape, and size to determine the disease, providing a reliable diagnosis.</p>', unsafe_allow_html=True)
 
     footer = """
