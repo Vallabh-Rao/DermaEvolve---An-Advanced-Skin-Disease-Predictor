@@ -229,6 +229,26 @@ if page == "Home":
     st.markdown('<p class="header-title">How It Works</p>', unsafe_allow_html=True)
     st.markdown('<p class="intro-text" style="text-align: justify;">DermaEvolve allows users to upload an image of a skin lesion or mole, and within seconds, it returns a prediction of the skin condition. The system analyzes features like color, texture, shape, and size to determine the disease, providing a reliable diagnosis.</p>', unsafe_allow_html=True)
 
+    footer = """
+    <style>
+    footer {
+        visibility: hidden;
+    }
+    
+    footer:after {
+        content: "📘 For educational purposes only";
+        visibility: visible;
+        display: block;
+        position: relative;
+        color: gray;
+        font-size: 14px;
+        text-align: center;
+        padding: 10px;
+    }
+    </style>
+    """
+    
+    st.markdown(footer, unsafe_allow_html=True)
         
 elif page == "Predict A Disease":
     st.title("Predict A Disease")
@@ -415,6 +435,27 @@ elif page == "Predict A Disease":
             st.write(f"Time taken for prediction: {time_taken:.4f} seconds")       
     else:
         st.warning("Please upload or capture an image to proceed.")
+
+    footer = """
+    <style>
+    footer {
+        visibility: hidden;
+    }
+    
+    footer:after {
+        content: "📘 For educational purposes only";
+        visibility: visible;
+        display: block;
+        position: relative;
+        color: gray;
+        font-size: 14px;
+        text-align: center;
+        padding: 10px;
+    }
+    </style>
+    """
+    
+    st.markdown(footer, unsafe_allow_html=True)
     
 elif page == "Analytics":
     
@@ -549,6 +590,27 @@ elif page == "Analytics":
     plt.tight_layout()
 
     st.pyplot(fig)
+
+    footer = """
+    <style>
+    footer {
+        visibility: hidden;
+    }
+    
+    footer:after {
+        content: "📘 For educational purposes only";
+        visibility: visible;
+        display: block;
+        position: relative;
+        color: gray;
+        font-size: 14px;
+        text-align: center;
+        padding: 10px;
+    }
+    </style>
+    """
+    
+    st.markdown(footer, unsafe_allow_html=True)
     
 elif page == "About Us":
     
@@ -678,6 +740,27 @@ elif page == "About Us":
         </div>
     """, unsafe_allow_html=True)
 
+    footer = """
+    <style>
+    footer {
+        visibility: hidden;
+    }
+    
+    footer:after {
+        content: "📘 For educational purposes only";
+        visibility: visible;
+        display: block;
+        position: relative;
+        color: gray;
+        font-size: 14px;
+        text-align: center;
+        padding: 10px;
+    }
+    </style>
+    """
+    
+    st.markdown(footer, unsafe_allow_html=True)
+
     
 elif page == "Terms And Conditions":
     
@@ -767,3 +850,24 @@ elif page == "Terms And Conditions":
         """,
         unsafe_allow_html=True,
     )
+
+    footer = """
+    <style>
+    footer {
+        visibility: hidden;
+    }
+    
+    footer:after {
+        content: "📘 For educational purposes only";
+        visibility: visible;
+        display: block;
+        position: relative;
+        color: gray;
+        font-size: 14px;
+        text-align: center;
+        padding: 10px;
+    }
+    </style>
+    """
+    
+    st.markdown(footer, unsafe_allow_html=True)
