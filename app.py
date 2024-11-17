@@ -3,7 +3,7 @@ import streamlit as st
 import numpy as np
 from PIL import Image
 import openai
-
+import time
 from tensorflow.keras.preprocessing import image as keras_image
 import tensorflow as tf
 from tensorflow import lite
@@ -13,6 +13,17 @@ import matplotlib.pyplot as plt
 from streamlit.components.v1 import html
 import pandas as pd
 import seaborn as sns
+
+st.set_page_config(layout="wide", page_title="DermaEvolve - An Advanced Skin Disease Predictor", page_icon="😷")
+
+def close_sidebar_on_select():
+    if 'sidebar_open' not in st.session_state:
+        st.session_state.sidebar_open = True
+
+    if st.session_state.sidebar_open:
+        st.session_state.sidebar_open = False
+
+close_sidebar_on_select()
 
 with st.sidebar:
     page = option_menu(
@@ -48,7 +59,7 @@ if page == "Home":
                     background-color: aquamarine;
                     padding: 20px;
                     text-align: center;
-                    font-size: 3.0em;
+                    font-size: 2em;
                     font-weight: bold;
                     color: black;
                 }
@@ -108,7 +119,7 @@ if page == "Home":
         <style>
         /* Container styling */
         .header-title {
-            font-size: 3em;
+            font-size: 1.5em;
             font-weight: bold;
             color: #ffffff;
             text-shadow: 0 1px 15px rgba(255, 94, 77, 0.8);
@@ -173,7 +184,7 @@ if page == "Home":
         with col1:
             st.markdown(
                 """
-                <div style="background-color: rgb(237, 237, 36); width: 25em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
+                <div style="background-color: rgb(237, 237, 36); width: 20em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
                     <h3>Customized CNN Model</h3>
                     <p style="text-align: justify;">This model is specifically tailored for skin disease prediction, leveraging a customized CNN architecture.</p>
                     <p><strong>Accuracy: 82.70%</strong></p>
@@ -183,7 +194,7 @@ if page == "Home":
         with col2:
             st.markdown(
                 """
-                <div style="background-color: rgb(160, 237, 36); width: 25em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
+                <div style="background-color: rgb(160, 237, 36); width: 20em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
                     <h3>MobileNet</h3>
                     <p style="text-align: justify;">MobileNet is a lightweight neural network model faster and efficient for complex predictions, making it the most flexible fine-tuned model.</p>
                     <p><strong>Accuracy: 66.00%</strong></p>
@@ -193,7 +204,7 @@ if page == "Home":
         with col3:
             st.markdown(
                 """
-                <div style="background-color: rgb(54, 252, 225); width: 25em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
+                <div style="background-color: rgb(54, 252, 225); width: 20em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
                     <h3>DenseNet-169</h3>
                     <p style="text-align: justify;">DenseNet-169 is a deep convolutional network that improves performance by connecting each layer to every other layer in a feed-forward fashion.</p>
                     <p><strong>Accuracy: 75.71%</strong></p>
@@ -203,7 +214,7 @@ if page == "Home":
         with col4:
             st.markdown(
                 """
-                <div style="background-color: rgb(245, 104, 104); width: 25em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
+                <div style="background-color: rgb(245, 104, 104); width: 20em; height: auto; color:black; padding: 20px; border-radius: 10px; text-align: center;">
                     <h3>NASNet</h3>
                     <p style="text-align: justify;">NASNet is a neural architecture search-based model designed for optimal performance on image classification tasks like skin disease detection.</p>
                     <p><strong>Accuracy: 62.76%</strong></p>
@@ -211,10 +222,10 @@ if page == "Home":
                 """, unsafe_allow_html=True)
     
     st.markdown('<br>', unsafe_allow_html=True)
-    st.markdown('<p class="intro-text" style="text-align: justify;">Our models are trained using high-quality, labeled dermatological datasets, and we leverage various techniques such as GAN-based augmentation to address data imbalances, improving model robustness and accuracy.</p>', unsafe_allow_html=True)
+    st.markdown('<p class="intro-text" style="text-align: justify;">Our models are trained using high-quality, labeled dermatological datasets, and we leverage various techniques such as SMOTE-based augmentation to address data imbalances, improving model robustness and accuracy.</p>', unsafe_allow_html=True)
 
-    st.markdown('<p class="header-title"style="text-align: justify;">Key Features of DermaEvolve</p>', unsafe_allow_html=True)
-
+    
+    st.subheader("Key Features of DermaEvolve")
     st.markdown("""
         <ul class="intro-text" style="text-align: justify;">
             <li><b>Real-time Skin Disease Prediction:</b> Using deep learning models for fast and accurate diagnosis.</li>
@@ -224,9 +235,31 @@ if page == "Home":
         </ul>
     """, unsafe_allow_html=True)
 
-    st.markdown('<p class="header-title">How It Works</p>', unsafe_allow_html=True)
+    st.subheader("How It Works ?")
+    
     st.markdown('<p class="intro-text" style="text-align: justify;">DermaEvolve allows users to upload an image of a skin lesion or mole, and within seconds, it returns a prediction of the skin condition. The system analyzes features like color, texture, shape, and size to determine the disease, providing a reliable diagnosis.</p>', unsafe_allow_html=True)
 
+    footer = """
+    <style>
+    footer {
+        content: "📘 For educational purposes only";
+        visibility: visible;
+    }
+    
+    footer:after {
+        
+        visibility: visible;
+        display: block;
+        position: relative;
+        color: gray;
+        font-size: 14px;
+        text-align: center;
+        padding: 10px;
+    }
+    </style>
+    """
+    
+    st.markdown(footer, unsafe_allow_html=True)
         
 elif page == "Predict A Disease":
     st.title("Predict A Disease")
@@ -318,10 +351,14 @@ elif page == "Predict A Disease":
 
         selected_model = st.selectbox("Select Model", ["MobileNet", "DenseNet169", "Custom CNN", "ResNet50", "NasNet"])
         model_path = model_paths[selected_model]
+
+        start_time = time.time()
         
         interpreter = load_model(model_path)
         prediction = predict_image(interpreter, image)
         predicted_class = class_labels[prediction]
+        
+        end_time = time.time()
         
         st.markdown(f'<p class="subtitle">Predicted Class: <strong style="color: yellow;">{predicted_class}</strong></p>', unsafe_allow_html=True)
         
@@ -405,8 +442,31 @@ elif page == "Predict A Disease":
         if predicted_class in disease_info:
             disease_html = render_disease_info(disease_info[predicted_class])
             html(disease_html, height=300)
+            time_taken = end_time - start_time
+            st.write(f"Time taken for prediction: {time_taken:.4f} seconds")       
     else:
         st.warning("Please upload or capture an image to proceed.")
+
+    footer = """
+    <style>
+    footer {
+        visibility: hidden;
+    }
+    
+    footer:after {
+        content: "📘 For educational purposes only";
+        visibility: visible;
+        display: block;
+        position: relative;
+        color: gray;
+        font-size: 14px;
+        text-align: center;
+        padding: 10px;
+    }
+    </style>
+    """
+    
+    st.markdown(footer, unsafe_allow_html=True)
     
 elif page == "Analytics":
     
@@ -541,29 +601,33 @@ elif page == "Analytics":
     plt.tight_layout()
 
     st.pyplot(fig)
+
+    footer = """
+    <style>
+    footer {
+        visibility: hidden;
+    }
+    
+    footer:after {
+        content: "📘 For educational purposes only";
+        visibility: visible;
+        display: block;
+        position: relative;
+        color: gray;
+        font-size: 14px;
+        text-align: center;
+        padding: 10px;
+    }
+    </style>
+    """
+    
+    st.markdown(footer, unsafe_allow_html=True)
     
 elif page == "About Us":
     
-    st.title("About Us... The DEVELOPERS..!")
+    st.title("About Us... The DEVELOPERS..! 🐍")
     
-    image1 = "assets/computer-engineer.png" 
-    image2 = "assets/koala.png"  
-    image3 = "assets/workout.png"  
-    image4 = "assets/gaming.png"  
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.image(image1, width=150, caption="")
-
-    with col2:
-        st.image(image2, width=150, caption="")
-
-    with col3:
-        st.image(image3, width=150, caption="")
-
-    with col4:
-        st.image(image4, width=150, caption="")
+    
 
 
     st.markdown("""
@@ -680,11 +744,33 @@ elif page == "About Us":
             <h2 style="font-size: 24px; color: #333333; font-weight: bold;">Interested in Our Dataset or Collaboration?</h2>
             <p style="font-size: 18px; color: #555555;">If you are interested in gaining access to the dataset, wish to collaborate on exciting projects, or have any inquiries, we would love to hear from you. Feel free to reach out to us for further discussions!</p>
             <p style="font-size: 18px; color: #333333;"><strong>Email:</strong> <a href="mailto:lokesh.bhaskarnr@gmail.com" style="color: #0066cc; font-weight: bold; text-decoration: none;">lokesh.bhaskarnr@gmail.com</a></p>
+            <p style="font-size: 18px; color: #333333;"><a href="mailto:vallabhaarao@gmail.com" style="color: #0066cc; font-weight: bold; text-decoration: none;">vallabhaarao@gmail.com</a></p>
             <p style="font-size: 18px; color: #555555;">You can also explore our models and more on GitHub:</p>
             <p><a href="https://github.com/LokeshBhaskarNR/DermaEvolve---An-Advanced-Skin-Disease-Predictor.git" target="_blank" style="color: #0066cc; font-size: 18px; text-decoration: none; font-weight: bold; border-bottom: 2px solid #0066cc; transition: all 0.3s ease-in-out;">GitHub Repository</a></p>
             <p style="font-size: 16px; color: #777777; margin-top: 10px;">We look forward to connecting with you!</p>
         </div>
     """, unsafe_allow_html=True)
+
+    footer = """
+    <style>
+    footer {
+        visibility: hidden;
+    }
+    
+    footer:after {
+        content: "📘 For educational purposes only";
+        visibility: visible;
+        display: block;
+        position: relative;
+        color: gray;
+        font-size: 14px;
+        text-align: center;
+        padding: 10px;
+    }
+    </style>
+    """
+    
+    st.markdown(footer, unsafe_allow_html=True)
 
     
 elif page == "Terms And Conditions":
@@ -775,3 +861,24 @@ elif page == "Terms And Conditions":
         """,
         unsafe_allow_html=True,
     )
+
+    footer = """
+    <style>
+    footer {
+        visibility: hidden;
+    }
+    
+    footer:after {
+        content: "📘 For educational purposes only";
+        visibility: visible;
+        display: block;
+        position: relative;
+        color: gray;
+        font-size: 14px;
+        text-align: center;
+        padding: 10px;
+    }
+    </style>
+    """
+    
+    st.markdown(footer, unsafe_allow_html=True)
