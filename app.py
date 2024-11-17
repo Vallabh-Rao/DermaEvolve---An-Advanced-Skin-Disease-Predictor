@@ -16,6 +16,15 @@ import seaborn as sns
 
 st.set_page_config(layout="wide", page_title="DermaEvolve - An Advanced Skin Disease Predictor", page_icon="😷")
 
+def close_sidebar_on_select():
+    if 'sidebar_open' not in st.session_state:
+        st.session_state.sidebar_open = True
+
+    if st.session_state.sidebar_open:
+        st.session_state.sidebar_open = False
+
+close_sidebar_on_select()
+
 with st.sidebar:
     page = option_menu(
         menu_title="Navigation",
