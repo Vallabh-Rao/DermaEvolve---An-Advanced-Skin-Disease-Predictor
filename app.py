@@ -110,7 +110,7 @@ if page == "Home":
         <style>
         /* Container styling */
         .header-title {
-            font-size: 3em;
+            font-size: 1.5em;
             font-weight: bold;
             color: #ffffff;
             text-shadow: 0 1px 15px rgba(255, 94, 77, 0.8);
