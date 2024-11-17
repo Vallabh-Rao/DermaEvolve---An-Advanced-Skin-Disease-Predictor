@@ -232,11 +232,12 @@ if page == "Home":
     footer = """
     <style>
     footer {
-        visibility: hidden;
+        content: "📘 For educational purposes only";
+        visibility: visible;
     }
     
     footer:after {
-        content: "📘 For educational purposes only";
+        
         visibility: visible;
         display: block;
         position: relative;
