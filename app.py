@@ -3,7 +3,7 @@ import streamlit as st
 import numpy as np
 from PIL import Image
 import openai
-
+import time
 from tensorflow.keras.preprocessing import image as keras_image
 import tensorflow as tf
 from tensorflow import lite
@@ -320,10 +320,14 @@ elif page == "Predict A Disease":
 
         selected_model = st.selectbox("Select Model", ["MobileNet", "DenseNet169", "Custom CNN", "ResNet50", "NasNet"])
         model_path = model_paths[selected_model]
+
+        start_time = time.time()
         
         interpreter = load_model(model_path)
         prediction = predict_image(interpreter, image)
         predicted_class = class_labels[prediction]
+        
+        end_time = time.time()
         
         st.markdown(f'<p class="subtitle">Predicted Class: <strong style="color: yellow;">{predicted_class}</strong></p>', unsafe_allow_html=True)
         
@@ -407,6 +411,8 @@ elif page == "Predict A Disease":
         if predicted_class in disease_info:
             disease_html = render_disease_info(disease_info[predicted_class])
             html(disease_html, height=300)
+            time_taken = end_time - start_time
+            st.write(f"Time taken for prediction: {time_taken:.4f} seconds")       
     else:
         st.warning("Please upload or capture an image to proceed.")
     
