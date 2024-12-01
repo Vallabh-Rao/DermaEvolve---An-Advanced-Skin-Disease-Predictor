@@ -383,7 +383,7 @@ if page == "Home":
             user = login(login_username, login_password)
             if user:
                 st.session_state.global_username = login_username
-                st.success(f"Welcome back, {login_username}!")
+                st.success(f"Welcome, {login_username}! Active Session Initiated. Exit App to LogOut Automatically.")
                 st.session_state["rerun"] = not st.session_state.get("rerun", False)
             else:
                 st.error("Invalid username or password.")
