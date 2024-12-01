@@ -616,9 +616,10 @@ elif page == "Predict A Disease":
         st.markdown(footer, unsafe_allow_html=True)
         try:
             save_activity(st.session_state.global_username, image_path, predicted_class)
+            st.success("Prediction saved successfully!")
         except:
             pass
-        st.success("Prediction saved successfully!")
+        
     else:
         st.error("Please log in to predict a disease.")
 
