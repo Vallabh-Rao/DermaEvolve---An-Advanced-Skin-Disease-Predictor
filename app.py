@@ -91,7 +91,8 @@ def save_activity(username, image_path, prediction):
 
 # Display user activity
 def display_saved_activities(username):
-    st.markdown(f"Monitor Your Activity, {st.session_state.global_username}")
+    st.title(f"📊 Monitor Your Activity, {st.session_state.global_username}")
+
     conn = sqlite3.connect("dermaevolve.db")
     cursor = conn.cursor()
     cursor.execute("""
