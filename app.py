@@ -19,6 +19,8 @@ import os
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
 
+
+
 st.set_page_config(layout="wide", page_title="DermaEvolve - An Advanced Skin Disease Predictor", page_icon="😷")
 
 import os
