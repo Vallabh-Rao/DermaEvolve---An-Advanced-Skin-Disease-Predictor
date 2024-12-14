@@ -643,32 +643,41 @@ elif page == "Analytics":
         "Macro Avg": [0.87, 0.80, 0.65, 0.67, 0.36],
         "Weighted Avg": [0.87, 0.80, 0.65, 0.67, 0.36],
     }
-
+    
     df = pd.DataFrame(model_data)
-
+    
+    # Streamlit Interface
     st.title("Analytics: Model Performance Comparison")
-
+    
     st.title("Model Accuracy Data")
     st.dataframe(df)
-
+    
+    # Accuracy Comparison
     st.subheader("Accuracy Comparison")
     fig, ax = plt.subplots()
-    ax.bar(df["Model"], df["Accuracy"], color=["#4CAF50", "#2196F3", "#FFC107", "#FF5722", "#9C27B0"])
+    bars = ax.bar(df["Model"], df["Accuracy"], color=["#4CAF50", "#2196F3", "#FFC107", "#FF5722", "#9C27B0"])
     ax.set_title("Model Accuracy Comparison", fontsize=16)
     ax.set_xlabel("Model", fontsize=12)
     ax.set_ylabel("Accuracy", fontsize=12)
     ax.set_ylim(0, 1)
     ax.grid(axis="y", linestyle="--", alpha=0.7)
+    
+    # Add values on top of bars
+    for bar in bars:
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f"{bar.get_height():.2f}", 
+                ha='center', va='bottom', fontsize=10)
+    
     st.pyplot(fig)
-
+    
+    # Macro Avg vs Weighted Avg Comparison
     st.subheader("Macro Avg vs Weighted Avg Comparison")
     fig, ax = plt.subplots(figsize=(10, 6))
     bar_width = 0.35
     x = range(len(df["Model"]))
-
-    ax.bar(x, df["Macro Avg"], bar_width, label="Macro Avg", color="#3F51B5")
-    ax.bar([p + bar_width for p in x], df["Weighted Avg"], bar_width, label="Weighted Avg", color="#FF9800")
-
+    
+    bars1 = ax.bar(x, df["Macro Avg"], bar_width, label="Macro Avg", color="#3F51B5")
+    bars2 = ax.bar([p + bar_width for p in x], df["Weighted Avg"], bar_width, label="Weighted Avg", color="#FF9800")
+    
     ax.set_title("Macro Avg vs Weighted Avg for Models", fontsize=16)
     ax.set_xlabel("Model", fontsize=12)
     ax.set_ylabel("Score", fontsize=12)
@@ -677,6 +686,15 @@ elif page == "Analytics":
     ax.set_ylim(0, 1)
     ax.legend()
     ax.grid(axis="y", linestyle="--", alpha=0.7)
+    
+    # Add values on top of bars
+    for bar in bars1:
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f"{bar.get_height():.2f}", 
+                ha='center', va='bottom', fontsize=10)
+    for bar in bars2:
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f"{bar.get_height():.2f}", 
+                ha='center', va='bottom', fontsize=10)
+    
     st.pyplot(fig)
 
     st.markdown(
