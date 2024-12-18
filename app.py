@@ -13,9 +13,125 @@ import matplotlib.pyplot as plt
 from streamlit.components.v1 import html
 import pandas as pd
 import seaborn as sns
+import sqlite3
+from datetime import datetime
+import os
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
+
+
 
 st.set_page_config(layout="wide", page_title="DermaEvolve - An Advanced Skin Disease Predictor", page_icon="😷")
 
+import os
+if not os.path.exists("images"):
+    os.makedirs("images")
+
+def init_db():
+    conn = sqlite3.connect("dermaevolve.db")
+    cursor = conn.cursor()
+    # Create users table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            username TEXT UNIQUE,
+            email TEXT,
+            password TEXT,
+            age INTEGER,
+            location TEXT
+        )
+    """)
+    # Create activity table
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user_activity (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT,
+            image_path TEXT,
+            prediction TEXT,
+            timestamp TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
+init_db()
+# Register a new user
+def register(name, username, email, password, age, location):
+    try:
+        conn = sqlite3.connect("dermaevolve.db")
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO users (name, username, email, password, age, location)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (name, username, email, password, age, location))
+        conn.commit()
+        conn.close()
+        return True
+    except sqlite3.IntegrityError:
+        return False
+
+# Login user
+def login(username, password):
+    conn = sqlite3.connect("dermaevolve.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT * FROM users WHERE username=? AND password=?
+    """, (username, password))
+    user = cursor.fetchone()
+    conn.close()
+    return user
+
+# Save prediction activity
+def save_activity(username, image_path, prediction):
+    conn = sqlite3.connect("dermaevolve.db")
+    cursor = conn.cursor()
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    cursor.execute("""
+        INSERT INTO user_activity (username, image_path, prediction, timestamp)
+        VALUES (?, ?, ?, ?)
+    """, (username, image_path, prediction, timestamp))
+    conn.commit()
+    conn.close()
+
+# Display user activity
+def display_saved_activities(username):
+    st.title(f"📊 Monitor Your Activity, {st.session_state.global_username}")
+
+    conn = sqlite3.connect("dermaevolve.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT id, image_path, prediction, timestamp FROM user_activity WHERE username=?
+    """, (username,))
+    activities = cursor.fetchall()
+    conn.close()
+
+    if activities:
+        for activity in activities:
+            activity_id, image_path, prediction, timestamp = activity
+            col1, col2 = st.columns([3, 1])
+            with col1:
+                st.image(image_path, caption=f"Prediction: {prediction}\nTime: {timestamp}", use_container_width =True)
+            with col2:
+                if st.button("Delete", key=f"delete_{activity_id}"):
+                    delete_activity(activity_id)
+                    st.success("Activity deleted successfully!")
+                    st.session_state["rerun"] = not st.session_state.get("rerun", False)
+
+    else:
+        st.info("No activity found.")
+
+def delete_activity(activity_id):
+    conn = sqlite3.connect("dermaevolve.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        DELETE FROM user_activity WHERE id=?
+    """, (activity_id,))
+    conn.commit()
+    conn.close()
+
+if "global_username" not in st.session_state:
+    st.session_state.global_username = None
+    
 def close_sidebar_on_select():
     if 'sidebar_open' not in st.session_state:
         st.session_state.sidebar_open = True
@@ -28,8 +144,8 @@ close_sidebar_on_select()
 with st.sidebar:
     page = option_menu(
         menu_title="Navigation",
-        options=["Home", "Predict A Disease", "Analytics", "About Us", "Terms And Conditions"],
-        icons=["house-door", "person", "bar-chart", "info-circle", "file-earmark-text"],
+        options = ["Home", "Predict A Disease", "Your Activity", "Analytics", "About Us", "Terms And Conditions"],
+        icons = ["house-door", "person", "camera", "bar-chart", "info-circle", "file-earmark-text"],
         menu_icon="cast",
         default_index=0,
         orientation="vertical",
@@ -260,214 +376,265 @@ if page == "Home":
     """
     
     st.markdown(footer, unsafe_allow_html=True)
+    
+    tab1, tab2 = st.tabs(["Login", "Register"])
+
+    with tab1:
+        st.subheader("Login")
+        login_username = st.text_input("Username", key="login_username")
+        login_password = st.text_input("Password", type="password", key="login_password")
+        if st.button("Login"):
+            user = login(login_username, login_password)
+            if user:
+                st.session_state.global_username = login_username
+                st.success(f"Welcome, {login_username}! Active Session Initiated. Exit App to LogOut Automatically.")
+                st.session_state["rerun"] = not st.session_state.get("rerun", False)
+            else:
+                st.error("Invalid username or password.")
+
+    # Register Tab
+    with tab2:
+        st.subheader("Register")
+        name = st.text_input("Name")
+        username = st.text_input("Username")
+        email = st.text_input("Email")
+        password = st.text_input("Password", type="password")
+        age = st.number_input("Age", min_value=0, step=1)
+        location = st.text_input("Location")
+        if st.button("Register"):
+            if register(name, username, email, password, age, location):
+                st.success("Registration successful! You can now log in.")
+            else:
+                st.error("Username already exists. Please choose a different one.")
+
         
 elif page == "Predict A Disease":
-    st.title("Predict A Disease")
-    st.warning(" Image Upload Instructions")
-    st.markdown("""
-    - **Image should be clear and focused** to ensure accurate classification.
-    - Before selecting a model, Please refer to the ***ANALYTICS*** section for more info about precision and accuracy of all our models.
-    - **Preferred format**: .jpg, .jpeg, .png (max 200MB).
-    - Ensure the skin lesion or area is well-lit and captured without obstructions.
-    - If using the camera to capture, make sure the image is in focus and taken from an appropriate distance.
-    - Try capturing the image only with skin lesion, eliminating the background or unwanted details, considering the sensitiveness of the models.
-    """)
-    
-    class_labels = [
-        "Actinic Keratosis", "Basal Cell Carcinoma", "Blue Naevus", "Dermatofibroma", 
-        "Elastosis Perforans Serpiginosa", "Lentigo Maligna", "Melanocytic Nevus", 
-        "Melanoma", "Nevus Sebaceus", "Pigmented Benign Keratosis", "Seborrheic Keratosis", 
-        "Squamous Cell Carcinoma", "Vascular Lesion"
-    ]
-    
-    model_paths = {
-        "MobileNet": "Android_Compatible_models/MobileNet.tflite",
-        "DenseNet169": "Android_Compatible_models/DenseNet_169.tflite",
-        "Custom CNN": "Android_Compatible_models/CNN_Customized.tflite",
-        "ResNet50": "Android_Compatible_models/ResNet_50.tflite",
-        "NasNet": "Android_Compatible_models/NasNet.tflite"
-    }
-
-    st.markdown(
-        """
-        <style>
-            .title {
-                color: #ffffff;
-                font-weight: bold;
-                font-size: 24px;
-                text-align: center;
-            }
-            .subtitle {
-                color: #ffffff;
-                font-weight: bold;
-                font-size: 18px;
-                text-align: center;
-            }
-            .warning {
-                color: #ff0000;
-                font-size: 16px;
-                font-weight: normal;
-            }
-        </style>
-        """, unsafe_allow_html=True
-    )
-
-    st.markdown('<p class="title">Choose image input method</p>', unsafe_allow_html=True)
-
-    def load_model(model_path):
-        interpreter = lite.Interpreter(model_path=model_path)
-        interpreter.allocate_tensors()
-        return interpreter
-    
-    
-    def predict_image(interpreter, image):
-        input_details = interpreter.get_input_details()
-        output_details = interpreter.get_output_details()
-
-        image = image.resize((64, 64))
-        image_array = np.array(image).astype(np.float32)
-        image_array = np.expand_dims(image_array, axis=0)
-
-        interpreter.set_tensor(input_details[0]['index'], image_array)
-        interpreter.invoke()
-
-        output_data = interpreter.get_tensor(output_details[0]['index'])
-        return np.argmax(output_data, axis=1)[0]
-
-    image_option = st.radio("", ("Upload Image 🖼️", "Capture Image 📷"))
-    image = None
-
-    if image_option == "Upload Image 🖼️":
-        uploaded_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
-        if uploaded_image is not None:
-            image = Image.open(uploaded_image)
-    elif image_option == "Capture Image 📷":
-        uploaded_image = st.camera_input("Capture Image")
-        if uploaded_image is not None:
-            image = Image.open(uploaded_image)
-
-    if image is not None:
-        image = image.resize((64, 64))
-
-        selected_model = st.selectbox("Select Model", ["MobileNet", "DenseNet169", "Custom CNN", "ResNet50", "NasNet"])
-        model_path = model_paths[selected_model]
-
-        start_time = time.time()
+    if st.session_state.global_username:
+        st.title("Predict A Disease")
+        st.warning(" Image Upload Instructions")
+        st.markdown("""
+        - **Image should be clear and focused** to ensure accurate classification.
+        - Before selecting a model, Please refer to the ***ANALYTICS*** section for more info about precision and accuracy of all our models.
+        - **Preferred format**: .jpg, .jpeg, .png (max 200MB).
+        - Ensure the skin lesion or area is well-lit and captured without obstructions.
+        - If using the camera to capture, make sure the image is in focus and taken from an appropriate distance.
+        - Try capturing the image only with skin lesion, eliminating the background or unwanted details, considering the sensitiveness of the models.
+        """)
         
-        interpreter = load_model(model_path)
-        prediction = predict_image(interpreter, image)
-        predicted_class = class_labels[prediction]
+        class_labels = [
+            "Actinic Keratosis", "Basal Cell Carcinoma", "Blue Naevus", "Dermatofibroma", 
+            "Elastosis Perforans Serpiginosa", "Lentigo Maligna", "Melanocytic Nevus", 
+            "Melanoma", "Nevus Sebaceus", "Pigmented Benign Keratosis", "Seborrheic Keratosis", 
+            "Squamous Cell Carcinoma", "Vascular Lesion"
+        ]
         
-        end_time = time.time()
-        
-        st.markdown(f'<p class="subtitle">Predicted Class: <strong style="color: yellow;">{predicted_class}</strong></p>', unsafe_allow_html=True)
-        
-        disease_info = {
-            "Actinic Keratosis": {
-                "name": "Actinic Keratosis",
-                "symptoms": "Rough, scaly patches on the skin, often in areas exposed to the sun.",
-                "treatment": "Cryotherapy, topical treatments (e.g., fluorouracil), or photodynamic therapy.",
-            },
-            "Basal Cell Carcinoma": {
-                "name": "Basal Cell Carcinoma",
-                "symptoms": "Shiny or pearly bumps, open sores that don’t heal, or reddish patches.",
-                "treatment": "Surgical removal, Mohs surgery, or radiation therapy.",
-            },
-            "Blue Naevus": {
-                "name": "Blue Naevus",
-                "symptoms": "Benign blue or bluish-black moles often found on the face, hands, or feet.",
-                "treatment": "Typically no treatment is required unless changes are noted.",
-            },
-            "Dermatofibroma": {
-                "name": "Dermatofibroma",
-                "symptoms": "Firm, small nodules on the skin, usually painless.",
-                "treatment": "Surgical removal if bothersome.",
-            },
-            "Elastosis Perforans Serpiginosa": {
-                "name": "Elastosis Perforans Serpiginosa",
-                "symptoms": "Raised, ring-shaped lesions often found on the neck or arms.",
-                "treatment": "Topical retinoids or corticosteroids; cryotherapy in severe cases.",
-            },
-            "Lentigo Maligna": {
-                "name": "Lentigo Maligna",
-                "symptoms": "Flat, dark patches that grow slowly, typically on sun-exposed skin.",
-                "treatment": "Surgical excision, Mohs surgery, or laser therapy.",
-            },
-            "Melanocytic Nevus": {
-                "name": "Melanocytic Nevus",
-                "symptoms": "Common moles that are usually brown or skin-colored.",
-                "treatment": "Generally no treatment unless atypical or changing.",
-            },
-            "Melanoma": {
-                "name": "Melanoma",
-                "symptoms": "Asymmetrical moles with irregular borders and color variations.",
-                "treatment": "Surgical removal, immunotherapy, chemotherapy, or radiation therapy.",
-            },
-            "Nevus Sebaceus": {
-                "name": "Nevus Sebaceus",
-                "symptoms": "Yellowish patches on the scalp or face, often present at birth.",
-                "treatment": "Surgical removal if changes occur or for cosmetic reasons.",
-            },
-            "Pigmented Benign Keratosis": {
-                "name": "Pigmented Benign Keratosis",
-                "symptoms": "Dark, waxy, or warty growths on the skin.",
-                "treatment": "Cryotherapy or laser removal for cosmetic reasons.",
-            },
-            "Seborrheic Keratosis": {
-                "name": "Seborrheic Keratosis",
-                "symptoms": "Brown or black growths with a waxy or stuck-on appearance.",
-                "treatment": "Cryotherapy, curettage, or laser treatment if necessary.",
-            },
-            "Squamous Cell Carcinoma": {
-                "name": "Squamous Cell Carcinoma",
-                "symptoms": "Firm, red nodules or scaly lesions, often on sun-exposed areas.",
-                "treatment": "Surgical excision, Mohs surgery, or radiation therapy.",
-            },
-            "Vascular Lesion": {
-                "name": "Vascular Lesion",
-                "symptoms": "Red or purple spots due to abnormal blood vessels.",
-                "treatment": "Laser therapy or sclerotherapy for cosmetic purposes.",
-            },
+        model_paths = {
+            "MobileNet": "Android_Compatible_models/MobileNet.tflite",
+            "DenseNet169": "Android_Compatible_models/DenseNet_169.tflite",
+            "Custom CNN": "Android_Compatible_models/CNN_Customized.tflite",
+            "ResNet50": "Android_Compatible_models/ResNet_50.tflite",
+            "NasNet": "Android_Compatible_models/NasNet.tflite"
         }
 
-        def render_disease_info(disease_data):
-            return f"""
-            <div style="border: 2px solid #4CAF50; padding: 20px; margin: 20px; border-radius: 10px; background-color: #f9f9f9;">
-                <h2 style="color: #4CAF50;">{disease_data['name']}</h2>
-                <p><strong>Symptoms:</strong> {disease_data['symptoms']}</p>
-                <p><strong>Treatment:</strong> {disease_data['treatment']}</p>
-            </div>
+        st.markdown(
             """
+            <style>
+                .title {
+                    color: #ffffff;
+                    font-weight: bold;
+                    font-size: 24px;
+                    text-align: center;
+                }
+                .subtitle {
+                    color: #ffffff;
+                    font-weight: bold;
+                    font-size: 18px;
+                    text-align: center;
+                }
+                .warning {
+                    color: #ff0000;
+                    font-size: 16px;
+                    font-weight: normal;
+                }
+            </style>
+            """, unsafe_allow_html=True
+        )
 
-        if predicted_class in disease_info:
-            disease_html = render_disease_info(disease_info[predicted_class])
-            html(disease_html, height=300)
-            time_taken = end_time - start_time
-            st.write(f"Time taken for prediction: {time_taken:.4f} seconds")       
+        st.markdown('<p class="title">Choose image input method</p>', unsafe_allow_html=True)
+
+        def load_model(model_path):
+            interpreter = lite.Interpreter(model_path=model_path)
+            interpreter.allocate_tensors()
+            return interpreter
+        
+        
+        def predict_image(interpreter, image):
+            input_details = interpreter.get_input_details()
+            output_details = interpreter.get_output_details()
+
+            image = image.resize((64, 64))
+            image_array = np.array(image).astype(np.float32)
+            image_array = np.expand_dims(image_array, axis=0)
+
+            interpreter.set_tensor(input_details[0]['index'], image_array)
+            interpreter.invoke()
+
+            output_data = interpreter.get_tensor(output_details[0]['index'])
+            return np.argmax(output_data, axis=1)[0]
+
+        image_option = st.radio("", ("Upload Image 🖼️", "Capture Image 📷"))
+        image = None
+
+        if image_option == "Upload Image 🖼️":
+            uploaded_image = st.file_uploader("Upload an image", type=["jpg", "jpeg", "png"])
+            if uploaded_image is not None:
+                image = Image.open(uploaded_image)
+        elif image_option == "Capture Image 📷":
+            uploaded_image = st.camera_input("Capture Image")
+            if uploaded_image is not None:
+                image = Image.open(uploaded_image)
+
+        if image is not None:
+            image = image.resize((64, 64))
+
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
+            image_path = f"images/uploaded_images_{timestamp}.png"
+            with open(image_path, "wb") as f:
+                f.write(uploaded_image.getbuffer())
+            
+            selected_model = st.selectbox("Select Model", ["MobileNet", "DenseNet169", "Custom CNN", "ResNet50", "NasNet"])
+            model_path = model_paths[selected_model]
+
+            start_time = time.time()
+            
+            interpreter = load_model(model_path)
+            prediction = predict_image(interpreter, image)
+            predicted_class = class_labels[prediction]
+            
+            end_time = time.time()
+            
+            st.markdown(f'<p class="subtitle">Predicted Class: <strong style="color: yellow;">{predicted_class}</strong></p>', unsafe_allow_html=True)
+            
+            disease_info = {
+                "Actinic Keratosis": {
+                    "name": "Actinic Keratosis",
+                    "symptoms": "Rough, scaly patches on the skin, often in areas exposed to the sun.",
+                    "treatment": "Cryotherapy, topical treatments (e.g., fluorouracil), or photodynamic therapy.",
+                },
+                "Basal Cell Carcinoma": {
+                    "name": "Basal Cell Carcinoma",
+                    "symptoms": "Shiny or pearly bumps, open sores that don’t heal, or reddish patches.",
+                    "treatment": "Surgical removal, Mohs surgery, or radiation therapy.",
+                },
+                "Blue Naevus": {
+                    "name": "Blue Naevus",
+                    "symptoms": "Benign blue or bluish-black moles often found on the face, hands, or feet.",
+                    "treatment": "Typically no treatment is required unless changes are noted.",
+                },
+                "Dermatofibroma": {
+                    "name": "Dermatofibroma",
+                    "symptoms": "Firm, small nodules on the skin, usually painless.",
+                    "treatment": "Surgical removal if bothersome.",
+                },
+                "Elastosis Perforans Serpiginosa": {
+                    "name": "Elastosis Perforans Serpiginosa",
+                    "symptoms": "Raised, ring-shaped lesions often found on the neck or arms.",
+                    "treatment": "Topical retinoids or corticosteroids; cryotherapy in severe cases.",
+                },
+                "Lentigo Maligna": {
+                    "name": "Lentigo Maligna",
+                    "symptoms": "Flat, dark patches that grow slowly, typically on sun-exposed skin.",
+                    "treatment": "Surgical excision, Mohs surgery, or laser therapy.",
+                },
+                "Melanocytic Nevus": {
+                    "name": "Melanocytic Nevus",
+                    "symptoms": "Common moles that are usually brown or skin-colored.",
+                    "treatment": "Generally no treatment unless atypical or changing.",
+                },
+                "Melanoma": {
+                    "name": "Melanoma",
+                    "symptoms": "Asymmetrical moles with irregular borders and color variations.",
+                    "treatment": "Surgical removal, immunotherapy, chemotherapy, or radiation therapy.",
+                },
+                "Nevus Sebaceus": {
+                    "name": "Nevus Sebaceus",
+                    "symptoms": "Yellowish patches on the scalp or face, often present at birth.",
+                    "treatment": "Surgical removal if changes occur or for cosmetic reasons.",
+                },
+                "Pigmented Benign Keratosis": {
+                    "name": "Pigmented Benign Keratosis",
+                    "symptoms": "Dark, waxy, or warty growths on the skin.",
+                    "treatment": "Cryotherapy or laser removal for cosmetic reasons.",
+                },
+                "Seborrheic Keratosis": {
+                    "name": "Seborrheic Keratosis",
+                    "symptoms": "Brown or black growths with a waxy or stuck-on appearance.",
+                    "treatment": "Cryotherapy, curettage, or laser treatment if necessary.",
+                },
+                "Squamous Cell Carcinoma": {
+                    "name": "Squamous Cell Carcinoma",
+                    "symptoms": "Firm, red nodules or scaly lesions, often on sun-exposed areas.",
+                    "treatment": "Surgical excision, Mohs surgery, or radiation therapy.",
+                },
+                "Vascular Lesion": {
+                    "name": "Vascular Lesion",
+                    "symptoms": "Red or purple spots due to abnormal blood vessels.",
+                    "treatment": "Laser therapy or sclerotherapy for cosmetic purposes.",
+                },
+            }
+
+            def render_disease_info(disease_data):
+                return f"""
+                <div style="border: 2px solid #4CAF50; padding: 20px; margin: 20px; border-radius: 10px; background-color: #f9f9f9;">
+                    <h2 style="color: #4CAF50;">{disease_data['name']}</h2>
+                    <p><strong>Symptoms:</strong> {disease_data['symptoms']}</p>
+                    <p><strong>Treatment:</strong> {disease_data['treatment']}</p>
+                </div>
+                """
+
+            if predicted_class in disease_info:
+                disease_html = render_disease_info(disease_info[predicted_class])
+                html(disease_html, height=300)
+                time_taken = end_time - start_time
+                st.write(f"Time taken for prediction: {time_taken:.4f} seconds")       
+        else:
+            st.warning("Please upload or capture an image to proceed.")
+
+        footer = """
+        <style>
+        footer {
+            visibility: hidden;
+        }
+        
+        footer:after {
+            content: "📘 For educational purposes only";
+            visibility: visible;
+            display: block;
+            position: relative;
+            color: gray;
+            font-size: 14px;
+            text-align: center;
+            padding: 10px;
+        }
+        </style>
+        """
+        
+        st.markdown(footer, unsafe_allow_html=True)
+        try:
+            save_activity(st.session_state.global_username, image_path, predicted_class)
+            st.success("Prediction saved successfully!")
+        except:
+            pass
+        
     else:
-        st.warning("Please upload or capture an image to proceed.")
+        st.error("Please log in to predict a disease.")
 
-    footer = """
-    <style>
-    footer {
-        visibility: hidden;
-    }
-    
-    footer:after {
-        content: "📘 For educational purposes only";
-        visibility: visible;
-        display: block;
-        position: relative;
-        color: gray;
-        font-size: 14px;
-        text-align: center;
-        padding: 10px;
-    }
-    </style>
-    """
-    
-    st.markdown(footer, unsafe_allow_html=True)
-    
+if page == "Your Activity":
+    if st.session_state.global_username:
+        display_saved_activities(st.session_state.global_username)
+    else:
+        st.error("Please log in to view your activity.")
+        
 elif page == "Analytics":
     
     model_data = {
@@ -476,32 +643,41 @@ elif page == "Analytics":
         "Macro Avg": [0.87, 0.80, 0.65, 0.67, 0.36],
         "Weighted Avg": [0.87, 0.80, 0.65, 0.67, 0.36],
     }
-
+    
     df = pd.DataFrame(model_data)
-
+    
+    # Streamlit Interface
     st.title("Analytics: Model Performance Comparison")
-
+    
     st.title("Model Accuracy Data")
     st.dataframe(df)
-
+    
+    # Accuracy Comparison
     st.subheader("Accuracy Comparison")
     fig, ax = plt.subplots()
-    ax.bar(df["Model"], df["Accuracy"], color=["#4CAF50", "#2196F3", "#FFC107", "#FF5722", "#9C27B0"])
+    bars = ax.bar(df["Model"], df["Accuracy"], color=["#4CAF50", "#2196F3", "#FFC107", "#FF5722", "#9C27B0"])
     ax.set_title("Model Accuracy Comparison", fontsize=16)
     ax.set_xlabel("Model", fontsize=12)
     ax.set_ylabel("Accuracy", fontsize=12)
     ax.set_ylim(0, 1)
     ax.grid(axis="y", linestyle="--", alpha=0.7)
+    
+    # Add values on top of bars
+    for bar in bars:
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f"{bar.get_height():.2f}", 
+                ha='center', va='bottom', fontsize=10)
+    
     st.pyplot(fig)
-
+    
+    # Macro Avg vs Weighted Avg Comparison
     st.subheader("Macro Avg vs Weighted Avg Comparison")
     fig, ax = plt.subplots(figsize=(10, 6))
     bar_width = 0.35
     x = range(len(df["Model"]))
-
-    ax.bar(x, df["Macro Avg"], bar_width, label="Macro Avg", color="#3F51B5")
-    ax.bar([p + bar_width for p in x], df["Weighted Avg"], bar_width, label="Weighted Avg", color="#FF9800")
-
+    
+    bars1 = ax.bar(x, df["Macro Avg"], bar_width, label="Macro Avg", color="#3F51B5")
+    bars2 = ax.bar([p + bar_width for p in x], df["Weighted Avg"], bar_width, label="Weighted Avg", color="#FF9800")
+    
     ax.set_title("Macro Avg vs Weighted Avg for Models", fontsize=16)
     ax.set_xlabel("Model", fontsize=12)
     ax.set_ylabel("Score", fontsize=12)
@@ -510,6 +686,15 @@ elif page == "Analytics":
     ax.set_ylim(0, 1)
     ax.legend()
     ax.grid(axis="y", linestyle="--", alpha=0.7)
+    
+    # Add values on top of bars
+    for bar in bars1:
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f"{bar.get_height():.2f}", 
+                ha='center', va='bottom', fontsize=10)
+    for bar in bars2:
+        ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height(), f"{bar.get_height():.2f}", 
+                ha='center', va='bottom', fontsize=10)
+    
     st.pyplot(fig)
 
     st.markdown(
