@@ -16,10 +16,57 @@ import seaborn as sns
 import sqlite3
 from datetime import datetime
 import os
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img, img_to_array
 
+dataset_dir = "Dataset_Sample/Sample_Dataset_DE"
+image_size = (64, 64)
+batch_size = 32
+num_classes = len(os.listdir(dataset_dir))
 
+def predict_image_tflite(interpreter, img_array):
+    input_details = interpreter.get_input_details()
+    output_details = interpreter.get_output_details()
+
+    interpreter.set_tensor(input_details[0]['index'], img_array)
+
+    interpreter.invoke()
+
+    output_data = interpreter.get_tensor(output_details[0]['index'])
+    predicted_class_index = np.argmax(output_data, axis=1)[0]
+    
+    class_labels = list(val_generator.class_indices.keys())
+    predicted_class_label = class_labels[predicted_class_index]
+
+    return predicted_class_label, predicted_class_index
+
+def load_tflite_model(model_path):
+    interpreter = tf.lite.Interpreter(model_path=model_path)
+    interpreter.allocate_tensors()
+    return interpreter
+
+train_datagen = ImageDataGenerator(
+    rescale=1.0/255,
+    validation_split=0.2,
+    horizontal_flip=True,
+    vertical_flip=True
+)
+
+train_generator = train_datagen.flow_from_directory(
+    dataset_dir,
+    target_size=image_size,
+    batch_size=batch_size,
+    class_mode='categorical',
+    subset='training'
+)
+
+val_generator = train_datagen.flow_from_directory(
+    dataset_dir,
+    target_size=image_size,
+    batch_size=batch_size,
+    class_mode='categorical',
+    subset='validation',
+    shuffle=False
+)
 
 st.set_page_config(layout="wide", page_title="DermaEvolve - An Advanced Skin Disease Predictor", page_icon="😷")
 
@@ -421,12 +468,7 @@ elif page == "Predict A Disease":
         - Try capturing the image only with skin lesion, eliminating the background or unwanted details, considering the sensitiveness of the models.
         """)
         
-        class_labels = [
-            "Actinic Keratosis", "Basal Cell Carcinoma", "Blue Naevus", "Dermatofibroma", 
-            "Elastosis Perforans Serpiginosa", "Lentigo Maligna", "Melanocytic Nevus", 
-            "Melanoma", "Nevus Sebaceus", "Pigmented Benign Keratosis", "Seborrheic Keratosis", 
-            "Squamous Cell Carcinoma", "Vascular Lesion"
-        ]
+        
         
         model_paths = {
             "MobileNet": "Android_Compatible_models/MobileNet.tflite",
@@ -496,7 +538,10 @@ elif page == "Predict A Disease":
 
         if image is not None:
             image = image.resize((64, 64))
-
+            img_array = img_to_array(image)
+            img_array = np.expand_dims(img_array, axis=0)
+            img_array = img_array / 255.0
+            
             timestamp = datetime.now().strftime("%Y-%m-%d_%H%M%S")
             image_path = f"images/uploaded_images_{timestamp}.png"
             with open(image_path, "wb") as f:
@@ -507,13 +552,12 @@ elif page == "Predict A Disease":
 
             start_time = time.time()
             
-            interpreter = load_model(model_path)
-            prediction = predict_image(interpreter, image)
-            predicted_class = class_labels[prediction]
+            interpreter = load_tflite_model(model_path)
+            predicted_class_label, predicted_class_index = predict_image_tflite(interpreter, img_array)
             
             end_time = time.time()
             
-            st.markdown(f'<p class="subtitle">Predicted Class: <strong style="color: yellow;">{predicted_class}</strong></p>', unsafe_allow_html=True)
+            st.markdown(f'<p class="subtitle">Predicted Class: <strong style="color: yellow;">{predicted_class_label}</strong></p>', unsafe_allow_html=True)
             
             disease_info = {
                 "Actinic Keratosis": {
