@@ -560,18 +560,18 @@ elif page == "Predict A Disease":
             st.markdown(f'<p class="subtitle">Predicted Class: <strong style="color: yellow;">{predicted_class_label}</strong></p>', unsafe_allow_html=True)
             
             disease_info = {
-                "Actinic Keratosis": {
+                "Actinic_Keratosis": {
                     "name": "Actinic Keratosis",
                     "symptoms": "Rough, scaly patches on the skin, often in areas exposed to the sun.",
                     "treatment": "Cryotherapy, topical treatments (e.g., fluorouracil), or photodynamic therapy.",
                 },
                 "Basal Cell Carcinoma": {
-                    "name": "Basal Cell Carcinoma",
+                    "name": "Basal_Cell_Carcinoma",
                     "symptoms": "Shiny or pearly bumps, open sores that don’t heal, or reddish patches.",
                     "treatment": "Surgical removal, Mohs surgery, or radiation therapy.",
                 },
                 "Blue Naevus": {
-                    "name": "Blue Naevus",
+                    "name": "Blue_Naevus",
                     "symptoms": "Benign blue or bluish-black moles often found on the face, hands, or feet.",
                     "treatment": "Typically no treatment is required unless changes are noted.",
                 },
@@ -580,17 +580,17 @@ elif page == "Predict A Disease":
                     "symptoms": "Firm, small nodules on the skin, usually painless.",
                     "treatment": "Surgical removal if bothersome.",
                 },
-                "Elastosis Perforans Serpiginosa": {
+                "Elastosis_Perforans_Serpiginosa": {
                     "name": "Elastosis Perforans Serpiginosa",
                     "symptoms": "Raised, ring-shaped lesions often found on the neck or arms.",
                     "treatment": "Topical retinoids or corticosteroids; cryotherapy in severe cases.",
                 },
-                "Lentigo Maligna": {
+                "Lentigo_Maligna": {
                     "name": "Lentigo Maligna",
                     "symptoms": "Flat, dark patches that grow slowly, typically on sun-exposed skin.",
                     "treatment": "Surgical excision, Mohs surgery, or laser therapy.",
                 },
-                "Melanocytic Nevus": {
+                "Melanocytic_Nevus": {
                     "name": "Melanocytic Nevus",
                     "symptoms": "Common moles that are usually brown or skin-colored.",
                     "treatment": "Generally no treatment unless atypical or changing.",
@@ -600,27 +600,27 @@ elif page == "Predict A Disease":
                     "symptoms": "Asymmetrical moles with irregular borders and color variations.",
                     "treatment": "Surgical removal, immunotherapy, chemotherapy, or radiation therapy.",
                 },
-                "Nevus Sebaceus": {
+                "Nevus_Sebaceus": {
                     "name": "Nevus Sebaceus",
                     "symptoms": "Yellowish patches on the scalp or face, often present at birth.",
                     "treatment": "Surgical removal if changes occur or for cosmetic reasons.",
                 },
-                "Pigmented Benign Keratosis": {
+                "Pigmented_Benign_Keratosis": {
                     "name": "Pigmented Benign Keratosis",
                     "symptoms": "Dark, waxy, or warty growths on the skin.",
                     "treatment": "Cryotherapy or laser removal for cosmetic reasons.",
                 },
-                "Seborrheic Keratosis": {
+                "Seborrheic_Keratosis": {
                     "name": "Seborrheic Keratosis",
                     "symptoms": "Brown or black growths with a waxy or stuck-on appearance.",
                     "treatment": "Cryotherapy, curettage, or laser treatment if necessary.",
                 },
-                "Squamous Cell Carcinoma": {
+                "Squamous_Cell_Carcinoma": {
                     "name": "Squamous Cell Carcinoma",
                     "symptoms": "Firm, red nodules or scaly lesions, often on sun-exposed areas.",
                     "treatment": "Surgical excision, Mohs surgery, or radiation therapy.",
                 },
-                "Vascular Lesion": {
+                "Vascular_Lesion": {
                     "name": "Vascular Lesion",
                     "symptoms": "Red or purple spots due to abnormal blood vessels.",
                     "treatment": "Laser therapy or sclerotherapy for cosmetic purposes.",
@@ -636,8 +636,8 @@ elif page == "Predict A Disease":
                 </div>
                 """
 
-            if predicted_class in disease_info:
-                disease_html = render_disease_info(disease_info[predicted_class])
+            if predicted_class_label in disease_info:
+                disease_html = render_disease_info(disease_info[predicted_class_label])
                 html(disease_html, height=300)
                 time_taken = end_time - start_time
                 st.write(f"Time taken for prediction: {time_taken:.4f} seconds")       
