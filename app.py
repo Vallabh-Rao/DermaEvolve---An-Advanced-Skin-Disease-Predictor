@@ -925,7 +925,7 @@ elif page == "About Us":
             <div class="card">
                 <div class="card-header">Lokesh Bhaskar</div>
                 <div class="card-content">
-                    <strong>Role:</strong> Machine Learning Enthusiast<br>
+                    <strong>Role:</strong> Machine Learning Engineer<br>
                     <strong>Email:</strong> <a href="mailto:lokesh.bhaskarnr@gmail.com">lokesh.bhaskarnr@gmail.com</a><br>
                     <strong>Phone:</strong> +91 73376 49759<br>
                     <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/lokesh-bhaskar-4113ab2a4/" target="_blank">Lokesh Bhaskar</a><br>
@@ -936,7 +936,7 @@ elif page == "About Us":
             <div class="card">
                 <div class="card-header">Lakshmanan Basavaraj</div>
                 <div class="card-content">
-                    <strong>Role:</strong> Data Science Enthusiast<br>
+                    <strong>Role:</strong> Data Science Analyst<br>
                     <strong>Email:</strong> <a href="mailto:lakshmananbasavarajm@gmail.com">lakshmananbasavarajm@gmail.com</a><br>
                     <strong>Phone:</strong> +91 78296 09448<br>
                     <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/lakshmanan-b-236831233/" target="_blank">Lakshmanan B</a><br>
@@ -958,7 +958,7 @@ elif page == "About Us":
             <div class="card">
                 <div class="card-header">Nikhil R Naik</div>
                 <div class="card-content">
-                    <strong>Role:</strong> Frontend Developer And Data Science Enthusiast<br>
+                    <strong>Role:</strong> Frontend Developer<br>
                     <strong>Email:</strong> <a href="mailto:nikhillyrein456@gmail.com">nikhillyrein456@gmail.com</a><br>
                     <strong>Phone:</strong> +91 72043 70179<br>
                     <strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/ananya-sharma" target="_blank">Nikhil R Naik</a><br>
