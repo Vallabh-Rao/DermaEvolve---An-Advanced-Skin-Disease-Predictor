@@ -157,7 +157,7 @@ def display_saved_activities(username):
             activity_id, image_path, prediction, timestamp = activity
             col1, col2 = st.columns([3, 1])
             with col1:
-                st.image(image_path, caption=f"Prediction: {prediction}\nTime: {timestamp}", use_container_width =True)
+                st.image(image_path, caption=f"Prediction: {prediction}\nTime: {timestamp}", use_container_width =True, width=100)
             with col2:
                 if st.button("Delete", key=f"delete_{activity_id}"):
                     delete_activity(activity_id)
