@@ -570,7 +570,7 @@ elif page == "Predict A Disease":
                     "symptoms": "Shiny or pearly bumps, open sores that don’t heal, or reddish patches.",
                     "treatment": "Surgical removal, Mohs surgery, or radiation therapy.",
                 },
-                "Blue Naevus": {
+                "Blue_Naevus": {
                     "name": "Blue_Naevus",
                     "symptoms": "Benign blue or bluish-black moles often found on the face, hands, or feet.",
                     "treatment": "Typically no treatment is required unless changes are noted.",
