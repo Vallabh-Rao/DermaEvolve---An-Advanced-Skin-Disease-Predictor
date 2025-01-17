@@ -547,7 +547,7 @@ elif page == "Predict A Disease":
             with open(image_path, "wb") as f:
                 f.write(uploaded_image.getbuffer())
             
-            selected_model = st.selectbox("Select Model", ["MobileNet", "DenseNet169", "Custom CNN", "ResNet50", "NasNet"])
+            selected_model = st.selectbox("Select Model", ["NasNet", "DenseNet169", "MobileNet", "Custom CNN", "ResNet50"])
             model_path = model_paths[selected_model]
 
             start_time = time.time()
