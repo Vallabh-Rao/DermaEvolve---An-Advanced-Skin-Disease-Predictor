@@ -157,7 +157,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 For any inquiries, questions, or collaborations, feel free to reach out:
 
 - **Email**: [vallabhaarao@gmail.com](mailto:vallabhaarao@gmail.com)
-- **GitHub Repository**: [DermaEvolve - An-Advanced Skin Disease Predictor]([https://github.com/yourgithubusername/dermaevolve](https://github.com/LokeshBhaskarNR/DermaEvolve---An-Advanced-Skin-Disease-Predictor.git))
+- **GitHub Repository**: [DermaEvolve - An-Advanced Skin Disease Predictor]([https://github.com/yourgithubusername/dermaevolve](https://github.com/Vallabh-Rao/DermaEvolve---An-Advanced-Skin-Disease-Predictor))
 
 If you're interested in the dataset, want to collaborate, or discuss the project, don't hesitate to contact us!
 
